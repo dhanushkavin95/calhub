@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Financial Calculators</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        .calculator {
+            display: none;
+        }
+        .calculator.active {
+            display: block;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .custom-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="relative flex items-center justify-between h-16">
+                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-2xl font-bold text-indigo-600">FinCalc Pro</span>
+                    </div>
+                    <div class="hidden sm:block sm:ml-6">
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium" data-calculator="loan">Loan</a>
+                            <a href="#" class="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium" data-calculator="investment">Investment</a>
+                            <a href="#" class="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium" data-calculator="retirement">Retirement</a>
+                            <a href="#" class="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium" data-calculator="mortgage">Mortgage</a>
+                            <a href="#" class="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium" data-calculator="budget">Budget</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 px-4">
+        <div id="loan" class="calculator">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Loan Calculator</h2>
+                <form id="loanForm" class="space-y-4">
+                    <div>
+                        <label for="loanAmount" class="block text-sm font-medium text-gray-700">Loan Amount</label>
+                        <input type="number" id="loanAmount" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="loanInterestRate" class="block text-sm font-medium text-gray-700">Interest Rate (%)</label>
+                        <input type="number" id="loanInterestRate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="loanTerm" class="block text-sm font-medium text-gray-700">Loan Term (years)</label>
+                        <input type="number" id="loanTerm" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Calculate</button>
+                </form>
+                <div id="loanResult" class="mt-4 p-4 bg-gray-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Loan Summary:</h3>
+                    <p id="monthlyPayment" class="mb-2"></p>
+                    <p id="totalPayment" class="mb-2"></p>
+                    <p id="totalInterest" class="mb-2"></p>
+                    <div id="loanChart" class="mt-4" style="height: 300px;"></div>
+                </div>
+                <div id="loanTips" class="mt-4 p-4 bg-blue-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Loan Tips:</h3>
+                    <ul class="list-disc list-inside">
+                        <li>Consider making extra payments to reduce the total interest paid.</li>
+                        <li>Shop around for the best interest rates to save money over the life of the loan.</li>
+                        <li>Understand the difference between fixed and variable interest rates.</li>
+                        <li>Check if there are any prepayment penalties before making extra payments.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="investment" class="calculator">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Investment Calculator</h2>
+                <form id="investmentForm" class="space-y-4">
+                    <div>
+                        <label for="initialInvestment" class="block text-sm font-medium text-gray-700">Initial Investment</label>
+                        <input type="number" id="initialInvestment" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="monthlyContribution" class="block text-sm font-medium text-gray-700">Monthly Contribution</label>
+                        <input type="number" id="monthlyContribution" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="investmentYears" class="block text-sm font-medium text-gray-700">Investment Period (years)</label>
+                        <input type="number" id="investmentYears" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="expectedReturn" class="block text-sm font-medium text-gray-700">Expected Annual Return (%)</label>
+                        <input type="number" id="expectedReturn" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Calculate Investment</button>
+                </form>
+                <div id="investmentResult" class="mt-4 p-4 bg-gray-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Investment Summary:</h3>
+                    <p id="totalInvestment" class="mb-2"></p>
+                    <p id="totalContributions" class="mb-2"></p>
+                    <p id="totalInterestEarned" class="mb-2"></p>
+                    <div id="investmentChart" class="mt-4" style="height: 300px;"></div>
+                </div>
+                <div id="investmentTips" class="mt-4 p-4 bg-blue-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Investment Tips:</h3>
+                    <ul class="list-disc list-inside">
+                        <li>Start investing early to take advantage of compound interest.</li>
+                        <li>Diversify your portfolio to spread risk across different asset classes.</li>
+                        <li>Consider low-cost index funds for long-term investing.</li>
+                        <li>Regularly review and rebalance your portfolio to maintain your desired asset allocation.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="retirement" class="calculator">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Retirement Calculator</h2>
+                <form id="retirementForm" class="space-y-4">
+                    <div>
+                        <label for="currentAge" class="block text-sm font-medium text-gray-700">Current Age</label>
+                        <input type="number" id="currentAge" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="retirementAge" class="block text-sm font-medium text-gray-700">Retirement Age</label>
+                        <input type="number" id="retirementAge" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="currentSavings" class="block text-sm font-medium text-gray-700">Current Savings</label>
+                        <input type="number" id="currentSavings" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="monthlySavings" class="block text-sm font-medium text-gray-700">Monthly Savings</label>
+                        <input type="number" id="monthlySavings" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="expectedReturnRate" class="block text-sm font-medium text-gray-700">Expected Annual Return (%)</label>
+                        <input type="number" id="expectedReturnRate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="inflationRate" class="block text-sm font-medium text-gray-700">Expected Inflation Rate (%)</label>
+                        <input type="number" id="inflationRate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Calculate Retirement Savings</button>
+                </form>
+                <div id="retirementResult" class="mt-4 p-4 bg-gray-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Retirement Summary:</h3>
+                    <p id="totalRetirementSavings" class="mb-2"></p>
+                    <p id="monthlyRetirementIncome" class="mb-2"></p>
+                    <div id="retirementChart" class="mt-4" style="height: 300px;"></div>
+                </div>
+                <div id="retirementTips" class="mt-4 p-4 bg-blue-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Retirement Planning Tips:</h3>
+                    <ul class="list-disc list-inside">
+                        <li>Start saving for retirement as early as possible to benefit from compound interest.</li>
+                        <li>Take advantage of employer-sponsored retirement plans and matching contributions.</li>
+                        <li>Consider opening an IRA for additional tax-advantaged retirement savings.</li>
+                        <li>Adjust your investment strategy as you get closer to retirement age.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="mortgage" class="calculator">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Mortgage Calculator</h2>
+                <form id="mortgageForm" class="space-y-4">
+                    <div>
+                        <label for="homePrice" class="block text-sm font-medium text-gray-700">Home Price</label>
+                        <input type="number" id="homePrice" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="downPayment" class="block text-sm font-medium text-gray-700">Down Payment</label>
+                        <input type="number" id="downPayment" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="mortgageTerm" class="block text-sm font-medium text-gray-700">Mortgage Term (years)</label>
+                        <input type="number" id="mortgageTerm" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="mortgageRate" class="block text-sm font-medium text-gray-700">Interest Rate (%)</label>
+                        <input type="number" id="mortgageRate" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Calculate Mortgage</button>
+                </form>
+                <div id="mortgageResult" class="mt-4 p-4 bg-gray-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Mortgage Summary:</h3>
+                    <p id="monthlyMortgagePayment" class="mb-2"></p>
+                    <p id="totalMortgagePayment" class="mb-2"></p>
+                    <p id="totalMortgageInterest" class="mb-2"></p>
+                    <div id="mortgageChart" class="mt-4" style="height: 300px;"></div>
+                </div>
+                <div id="mortgageTips" class="mt-4 p-4 bg-blue-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Mortgage Tips:</h3>
+                    <ul class="list-disc list-inside">
+                        <li>Consider making a larger down payment to reduce your monthly payments and total interest.</li>
+                        <li>Shop around for the best mortgage rates and terms from different lenders.</li>
+                        <li>Understand the difference between fixed-rate and adjustable-rate mortgages.</li>
+                        <li>Factor in additional costs like property taxes, insurance, and maintenance when budgeting for a home.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="budget" class="calculator">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Budget Calculator</h2>
+                <form id="budgetForm" class="space-y-4">
+                    <div>
+                        <label for="monthlyIncome" class="block text-sm font-medium text-gray-700">Monthly Income</label>
+                        <input type="number" id="monthlyIncome" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="housingExpense" class="block text-sm font-medium text-gray-700">Housing Expense</label>
+                        <input type="number" id="housingExpense" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="transportationExpense" class="block text-sm font-medium text-gray-700">Transportation Expense</label>
+                        <input type="number" id="transportationExpense" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="foodExpense" class="block text-sm font-medium text-gray-700">Food Expense</label>
+                        <input type="number" id="foodExpense" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="utilitiesExpense" class="block text-sm font-medium text-gray-700">Utilities Expense</label>
+                        <input type="number" id="utilitiesExpense" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div>
+                        <label for="savingsGoal" class="block text-sm font-medium text-gray-700">Savings Goal</label>
+                        <input type="number" id="savingsGoal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Calculate Budget</button>
+                </form>
+                <div id="budgetResult" class="mt-4 p-4 bg-gray-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Budget Summary:</h3>
+                    <p id="totalExpenses" class="mb-2"></p>
+                    <p id="remainingBalance" class="mb-2"></p>
+                    <p id="savingsProgress" class="mb-2"></p>
+                    <div id="budgetChart" class="mt-4" style="height: 300px;"></div>
+                </div>
+                <div id="budgetTips" class="mt-4 p-4 bg-blue-100 rounded-md hidden">
+                    <h3 class="text-lg font-semibold mb-2">Budgeting Tips:</h3>
+                    <ul class="list-disc list-inside">
+                        <li>Use the 50/30/20 rule: 50% for needs, 30% for wants, and 20% for savings and debt repayment.</li>
+                        <li>Track your expenses to identify areas where you can cut back.</li>
+                        <li>Set specific and realistic financial goals to stay motivated.</li>
+                        <li>Review and adjust your budget regularly to ensure it aligns with your changing needs and goals.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const calculators = document.querySelectorAll('.calculator');
+        const navLinks = document.querySelectorAll('.text-gray-700');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const calculatorId = this.getAttribute('data-calculator');
+                calculators.forEach(calc => calc.classList.remove('active'));
+                document.getElementById(calculatorId).classList.add('active');
+            });
+        });
+
+        // INR Currency Formatter
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+        }
+
+        // Loan Calculator
+        document.getElementById('loanForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('loanAmount').value);
+            const rate = parseFloat(document.getElementById('loanInterestRate').value) / 100 / 12;
+            const term = parseFloat(document.getElementById('loanTerm').value) * 12;
+            if (isNaN(amount) || isNaN(rate) || isNaN(term) || amount <= 0 || rate <= 0 || term <= 0) {
+                alert('Please enter valid positive values.');
+                return;
+            }
+
+            const monthlyPayment = (amount * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1);
+            const totalPayment = monthlyPayment * term;
+            const totalInterest = totalPayment - amount;
+
+            document.getElementById('monthlyPayment').textContent = `Monthly Payment: ${formatCurrency(monthlyPayment)}`;
+            document.getElementById('totalPayment').textContent = `Total Payment: ${formatCurrency(totalPayment)}`;
+            document.getElementById('totalInterest').textContent = `Total Interest: ${formatCurrency(totalInterest)}`;
+
+            document.getElementById('loanResult').classList.remove('hidden');
+            document.getElementById('loanTips').classList.remove('hidden');
+
+            // Create loan chart
+            const ctx = document.getElementById('loanChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [amount, totalInterest],
+                        backgroundColor: ['#4F46E5', '#818CF8']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Loan Breakdown'
+                        }
+                    }
+                }
+            });
+        });
+
+        // Investment Calculator
+        document.getElementById('investmentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const initial = parseFloat(document.getElementById('initialInvestment').value);
+            const monthly = parseFloat(document.getElementById('monthlyContribution').value);
+            const years = parseFloat(document.getElementById('investmentYears').value);
+            const rate = parseFloat(document.getElementById('expectedReturn').value) / 100 / 12;
+            if (isNaN(initial) || isNaN(monthly) || isNaN(years) || isNaN(rate) || initial <= 0 || monthly < 0 || years <= 0 || rate <= 0) {
+                alert('Please enter valid positive values.');
+                return;
+            }
+
+            let total = initial;
+            for (let i = 0; i < years * 12; i++) {
+                total = (total + monthly) * (1 + rate);
+            }
+
+            const totalContributions = initial + (monthly * years * 12);
+            const totalInterest = total - totalContributions;
+
+            document.getElementById('totalInvestment').textContent = `Total Investment Value: ${formatCurrency(total)}`;
+            document.getElementById('totalContributions').textContent = `Total Contributions: ${formatCurrency(totalContributions)}`;
+            document.getElementById('totalInterestEarned').textContent = `Total Interest Earned: ${formatCurrency(totalInterest)}`;
+
+            document.getElementById('investmentResult').classList.remove('hidden');
+            document.getElementById('investmentTips').classList.remove('hidden');
+
+            // Create investment chart
+            const ctx = document.getElementById('investmentChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Contributions', 'Interest'],
+                    datasets: [{
+                        label: 'Investment Breakdown',
+                        data: [totalContributions, totalInterest],
+                        backgroundColor: ['#4F46E5', '#818CF8']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+        // Retirement Calculator
+        document.getElementById('retirementForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const currentAge = parseFloat(document.getElementById('currentAge').value);
+            const retirementAge = parseFloat(document.getElementById('retirementAge').value);
+            const currentSavings = parseFloat(document.getElementById('currentSavings').value);
+            const monthlySavings = parseFloat(document.getElementById('monthlySavings').value);
+            const expectedReturn = parseFloat(document.getElementById('expectedReturnRate').value) / 100;
+            const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+            if (isNaN(currentAge) || isNaN(retirementAge) || isNaN(currentSavings) || isNaN(monthlySavings) || isNaN(expectedReturn) || isNaN(inflationRate) || currentAge <= 0 || retirementAge <= 0 || currentSavings < 0 || monthlySavings < 0) {
+                alert('Please enter valid positive values.');
+                return;
+            }
+
+            const yearsToRetirement = retirementAge - currentAge;
+            const monthsToRetirement = yearsToRetirement * 12;
+
+            let totalSavings = currentSavings;
+            for (let i = 0; i < monthsToRetirement; i++) {
+                totalSavings = (totalSavings + monthlySavings) * (1 + (expectedReturn - inflationRate) / 12);
+            }
+
+            const monthlyRetirementIncome = totalSavings * 0.04 / 12; // Using the 4% rule
+
+            document.getElementById('totalRetirementSavings').textContent = `Estimated Retirement Savings: ${formatCurrency(totalSavings)}`;
+            document.getElementById('monthlyRetirementIncome').textContent = `Estimated Monthly Retirement Income: ${formatCurrency(monthlyRetirementIncome)}`;
+
+            document.getElementById('retirementResult').classList.remove('hidden');
+            document.getElementById('retirementTips').classList.remove('hidden');
+
+            // Create retirement chart
+            const ctx = document.getElementById('retirementChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: yearsToRetirement + 1 }, (_, i) => currentAge + i),
+                    datasets: [{
+                        label: 'Retirement Savings Growth',
+                        data: Array.from({ length: yearsToRetirement + 1 }, (_, i) => {
+                            let savings = currentSavings;
+                            for (let j = 0; j < i * 12; j++) {
+                                savings = (savings + monthlySavings) * (1 + (expectedReturn - inflationRate) / 12);
+                            }
+                            return savings;
+                        }),
+                        borderColor: '#4F46E5',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Age'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Savings (₹)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+        // Mortgage Calculator
+        document.getElementById('mortgageForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const homePrice = parseFloat(document.getElementById('homePrice').value);
+            const downPayment = parseFloat(document.getElementById('downPayment').value);
+            const term = parseFloat(document.getElementById('mortgageTerm').value) * 12;
+            const rate = parseFloat(document.getElementById('mortgageRate').value) / 100 / 12;
+            if (isNaN(homePrice) || isNaN(downPayment) || isNaN(term) || isNaN(rate) || homePrice <= 0 || downPayment < 0 || term <= 0 || rate <= 0) {
+                alert('Please enter valid positive values.');
+                return;
+            }
+
+            const loanAmount = homePrice - downPayment;
+            const monthlyPayment = (loanAmount * rate * Math.pow(1 + rate, term)) / (Math.pow(1 + rate, term) - 1);
+            const totalPayment = monthlyPayment * term;
+            const totalInterest = totalPayment - loanAmount;
+
+            document.getElementById('monthlyMortgage').textContent = `Monthly Payment: ${formatCurrency(monthlyPayment)}`;
+            document.getElementById('totalMortgage').textContent = `Total Payment: ${formatCurrency(totalPayment)}`;
+            document.getElementById('totalMortgageInterest').textContent = `Total Interest: ${formatCurrency(totalInterest)}`;
+
+            document.getElementById('mortgageResult').classList.remove('hidden');
+            document.getElementById('mortgageTips').classList.remove('hidden');
+
+            // Create mortgage chart
+            const ctx = document.getElementById('mortgageChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        label: 'Mortgage Breakdown',
+                        data: [loanAmount, totalInterest],
+                        backgroundColor: ['#4F46E5', '#818CF8']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
